@@ -1,2 +1,0 @@
-# Telegram_python_project
-從Telegram資料庫中抓取資料
