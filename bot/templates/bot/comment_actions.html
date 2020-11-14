@@ -1,0 +1,18 @@
+{% load bot_tags %}
+<div class="comment-actions">
+    {% user_liked user comment as comment_user_liked %}
+    <a href="#" class="comment-actions--like {% if not comment_user_liked %}text-muted{% endif %}"><i
+            class="material-icons">thumb_up</i> <span
+            class="likes-count">{{ comment.likes.count }}</span></a><span
+        class="dot text-muted">.</span>
+    {% if user == comment.user %}
+        <a href="#" class="comment-actions--edit text-muted">編輯</a><span
+            class="dot text-muted">.</span>
+    {% endif %}
+    <a href="#" class="comment-actions--reply text-muted">回覆</a>
+    {% if user == comment.user %}
+        <span
+                class="dot text-muted">.</span>
+        <a href="#" class="comment-actions--delete text-muted">刪除</a>
+    {% endif %}
+</div>

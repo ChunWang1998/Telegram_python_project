@@ -1,0 +1,28 @@
+<div id="emoji-modal-{{ channel.id }}" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">按鈕 x 表情</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form data-url="{% url "channel-emoji-edit" %}">
+                    {% for button_emoji in channel.button_emojis.all %}
+                        <div class="form-group">
+                            <label for="button-emoji-{{ button_emoji.id }}"></label>
+                            <input name="id-{{ button_emoji.id }}" id="button-emoji-{{ button_emoji.id }}"
+                                   class="button-emoji form-control" type="text"
+                                   value="{{ button_emoji.emoji }}">
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="emoji-form-submit btn btn-primary">存檔</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>

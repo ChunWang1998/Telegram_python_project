@@ -1,0 +1,297 @@
+{# DashBoard > 儀表板 #}
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static "paperdashboard/assets/img/apple-icon.png" %}">
+    <link rel="icon" type="image/png" href="{% static "paperdashboard/assets/img/favicon.png" %}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>
+        Telegram@ Like 後台
+    </title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+          name='viewport'/>
+    {#     Fonts and icons     #}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    {# CSS Files #}
+    <link href="{% static "paperdashboard/assets/css/bootstrap.min.css" %}" rel="stylesheet"/>
+    <link href="{% static "paperdashboard/assets/css/paper-dashboard.css" %}" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static "bot/main.css" %}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
+
+
+</head>
+
+<body class="">
+<div class="wrapper ">
+    <div class="sidebar" data-color="white" data-active-color="danger">
+        <div class="logo">
+            <a href="https://www.creative-tim.com" class="simple-text logo-mini">
+                <div class="logo-image-small">
+                    {# <img src="../assets/img/logo-small.png"> #}
+                </div>
+                {# <p>CT</p> #}
+            </a>
+            <a href="{% url "home" %}" class="simple-text logo-normal">
+                Telegram@ Like 後台
+                {% comment %}
+                    <div class="logo-image-big">
+                      <img src="../assets/img/logo-big.png">
+                    </div>
+                {% endcomment %}
+            </a>
+        </div>
+        <div class="sidebar-wrapper">
+            <ul class="nav">
+                <li class="active ">
+                    <a href="{% url "home" %}">
+                        <i class="nc-icon nc-bank"></i>
+                        <p>儀表板</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url "channel-list" %}">
+                        <i class="nc-icon nc-settings"></i>
+                        <p>設定</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url "post-list" %}">
+                        <i class="nc-icon nc-book-bookmark"></i>
+                        <p>貼文資料</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="main-panel">
+        {# Navbar #}
+        <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+            <div class="container-fluid">
+                <div class="navbar-wrapper">
+                    <div class="navbar-toggle">
+                        <button type="button" class="navbar-toggler">
+                            <span class="navbar-toggler-bar bar1"></span>
+                            <span class="navbar-toggler-bar bar2"></span>
+                            <span class="navbar-toggler-bar bar3"></span>
+                        </button>
+                    </div>
+                </div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-bar navbar-kebab"></span>
+                    <span class="navbar-toggler-bar navbar-kebab"></span>
+                    <span class="navbar-toggler-bar navbar-kebab"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <p>{{ request.user.full_name }}</p>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url "telegram-logout" %}"> &nbsp; 登出</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {# End Navbar #}
+        <div class="content">
+            {% block content %}
+                <div class="row">
+                    <div class="col-md-10 offset-1">
+                        <form data-url="{% url "get-charts-data" %}" id="date-range-form">
+                            <div class="row">
+                                <div class="col-md-8 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="date-range">選擇時間區間</label>
+                                        <input type="text" class="form-control" id="date-range">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title"> 統計資料</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for data in summary_data %}
+                                        <div class="col-md-4">
+                                            <p>{{ data.0 }}</p>
+                                            <p>{{ data.1 }}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">圖表</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-12">
+                                        <canvas id="all_buttons"></canvas>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <canvas id="button_one"></canvas>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <canvas id="button_two"></canvas>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <canvas id="button_three"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">頻道列表</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="text-primary">
+                                        <tr>
+                                            <th>
+                                                頻道名稱
+                                            </th>
+                                            <th>
+                                                用戶數
+                                            </th>
+                                            <th>
+                                                按鈕1
+                                            </th>
+                                            <th>
+                                                按鈕2
+                                            </th>
+                                            <th>
+                                                按鈕3
+                                            </th>
+                                            <th>
+                                                留言
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        {% for channel_data in channels_data %}
+                                            <tr>
+                                                {% for entry in channel_data %}
+                                                    <td>
+                                                        {{ entry }}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">最近貼文的統計資訊</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="text-primary">
+                                        <tr>
+                                            <th>
+                                                頻道名稱
+                                            </th>
+                                            <th>
+                                                Id
+                                            </th>
+
+                                            <th>日期</th>
+                                            <th>
+                                                按鈕1
+                                            </th>
+                                            <th>
+                                                按鈕2
+                                            </th>
+                                            <th>
+                                                按鈕3
+                                            </th>
+                                            <th>
+                                                留言
+                                            </th>
+                                            <th>
+                                                集客力
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        {% for post_data in posts_data %}
+                                            <tr>
+                                                {% for entry in post_data %}
+                                                    <td>
+                                                        {{ entry }}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{#   Core JS Files   #}
+<script src="{% static "paperdashboard/assets/js/core/jquery.min.js" %}"></script>
+<script src="{% static "paperdashboard/assets/js/core/popper.min.js" %}"></script>
+<script src="{% static "paperdashboard/assets/js/core/bootstrap.min.js" %}"></script>
+<script src="{% static "paperdashboard/assets/js/plugins/bootstrap-notify.js" %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+<script src="{% static "paperdashboard/assets/js/plugins/perfect-scrollbar.jquery.min.js" %}"></script>
+<script src="{% static "paperdashboard/assets/js/plugins/chartjs.min.js" %}"></script>
+{#  Notifications Plugin    #}
+<script src="{% static "paperdashboard/assets/js/plugins/bootstrap-notify.js" %}"></script>
+{# Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc #}
+<script src="{% static "paperdashboard/assets/js/paper-dashboard.min.js" %}" type="text/javascript"></script>
+<script src="{% static "paperdashboard/assets/demo/demo.js" %}" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="{% static "bot/reconnecting_websocket.js" %}"></script>
+
+<script src="{% static "bot/main.js" %}"></script>
+
+{% block local_js %}
+    <script src="{% static "bot/notifications.js" %}"></script>
+{% endblock %}
+</body>
+
+</html>

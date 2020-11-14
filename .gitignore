@@ -1,0 +1,8 @@
+db.sqlite3
+local_settings.py
+rough_work.py
+.idea
+staticfiles
+static/
+media/
+*.pyc

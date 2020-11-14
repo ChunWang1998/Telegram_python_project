@@ -1,0 +1,148 @@
+{% load static %}
+{% load bot_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+    {# Required meta tags #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {# Material Icons #}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    {# Bootstrap CSS #}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static "bot/comments.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
+    <title>Telegram@ Like - 留言頁</title>
+
+    <style>
+        textarea {
+            min-height: 64px !important;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .post-text {
+            padding-left: 2%;
+            padding-right: 5%;
+            padding-top: 3%;
+        }
+
+    </style>
+</head>
+<body>
+<div data-post-id="{{ post.id }}" class="content-wrapper">
+    <div>
+        <div class="row">
+            <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4 col-sm-12">
+                <div style="padding-left: 5%; padding-top: 5%">
+                    {% if post.text %}
+                        <p class="post-text">{{ post.text|safe|linebreaksbr }}</p>
+                    {% else %}
+                        {% if post.image %}
+                            <img style="width: 95%; height: auto" class="img img-fluid" src="{{ post.image.url }}"
+                                 alt="">
+                        {% else %}
+                            {% if not post.has_video %}
+                                <a href="{{ post.post_url }}" class="ml-2">{{ post.post_url }}</a>
+                            {% endif %}
+                        {% endif %}
+                        {% if post.caption %}
+                            <p class="post-text">{{ post.caption|safe|linebreaksbr }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="thread-action">
+                    <span class="text-muted">{{ post.time }}</span>
+                    {% if request.user.is_authenticated %}
+                        {% post_subscribed request.user post as is_post_subscribed %}
+
+                        <a href="#" id="subscribe-btn" data-url="{% url "subscribe" request.user.telegram_id post.id %}"
+                           class="text-muted">
+                            {% if is_post_subscribed %} 取消通知 {% else %} 訂閱通知 {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+
+                {% if has_next %}
+                    <button id="show-more-comments"
+                            data-url="{% url "comments-list" post.id %}?num_to_show={{ num_to_show }}"
+                            class="btn btn-primary btn-block btn-flat mb-1">{{ pagination_text }}</button>
+                {% endif %}
+
+                <span class="text-bold comments-count">{{ comments_count }} 則留言</span>
+                <div class="comments-wrapper">
+                    <div class="comments-list">
+                        {% include "bot/comments_list.html" %}
+                    </div>
+
+                    <div class="comment-form">
+                        <div class="pre-comment-form">
+
+                        </div>
+
+                        {% if request.user.is_authenticated %}
+                            <form id="comment-form">
+                                <div class="form-group">
+                                    <textarea oninput="autoResize(this)" class="form-control"
+                                              placeholder="在此撰寫您的留言..."></textarea>
+                                    <button type="submit" class="comment-submit-btn btn btn-primary"><i
+                                            class="material-icons">send</i>
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer-content">
+        <div class="footer-content__links">
+            {% if request.user.is_authenticated %}
+                <div class="footer-links">
+
+                    <a href="{% url "telegram-logout" %}?redirect={% url "comments-list" post.id %}">{{ request.user.full_name }}<span
+                            class="dot text-muted">.</span>
+                    </a>
+                    <a href="https://t.me/changsclub_bot">聯絡客服</a>
+                </div>
+                <div class="footer-links text-bold">
+                    <span class="text-muted">本站的服務由 </span> <a
+                        href="https://telegramat.com/"><span>Telegram@</span></a>
+                    <span class="text-muted">提供 </span>
+                </div>
+            {% else %}
+                <p class="text-muted">想要新增一則留言嗎?</p>
+                <script async src="https://telegram.org/js/telegram-widget.js?8"
+                        data-telegram-login="{{ bot_username }}"
+                        data-size="large" data-auth-url="{{ redirect_url }}" data-request-access="write"></script>
+            {% endif %}
+        </div>
+    </footer>
+</div>
+</div>
+
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script
+        src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+        integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+        crossorigin="anonymous"></script>
+<script src="{% static "bot/reconnecting_websocket.js" %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script type="text/javascript">
+    function autoResize(element) {
+        element.style.height = (element.scrollHeight) + 'px';
+    }
+</script>
+<script src="{% static "bot/comments.js" %}"></script>
+</body>
+</html>

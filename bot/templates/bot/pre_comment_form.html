@@ -1,0 +1,16 @@
+{% load bot_tags %}
+
+<div data-comment-id="{{ comment.id }}" class="comment comment--create">
+    <div class="comment-info">
+        <div class="thread_creator">
+            <div class="d-flex flex-row justify-content-space-around">
+                {# the reply-to target comment's username part #}
+                <span style="color: {% get_user_color comment.user comment.comment_post.post_channel %}">{{ comment.user.full_name }}</span>
+                {# reply 時, 用來cancel reply的那個 btn #}
+                <a href="#" id="comments-action-cancel" class="text-default right">&times;</a>
+            </div>
+            {# the reply-to target comment's text part #}
+            <div class="left">{{ comment.text|linebreaks }}</div>
+        </div>
+    </div>
+</div>

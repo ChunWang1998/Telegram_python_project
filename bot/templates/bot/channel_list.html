@@ -1,0 +1,124 @@
+{% extends "bot/home.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">頻道列表</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="text-primary">
+                            <tr>
+                                <th>
+                                    頻道名稱
+                                </th>
+                                <th>
+                                    按鈕1
+                                </th>
+                                <th>
+                                    按鈕2
+                                </th>
+                                <th>
+                                    按鈕3
+                                </th>
+                                <th>
+                                    留言
+                                </th>
+                                <th>
+                                    按鈕設定
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for channel in channels %}
+                                <tr>
+                                    {% for entry in channel.get_minimal_data %}
+                                        <td>
+                                            {{ entry }}
+                                        </td>
+                                    {% endfor %}
+                                    <td>
+                                        <button id="emoji-edit-btn"
+                                                data-target="#emoji-modal-{{ channel.id }}"
+                                                class="btn btn-primary btn-small"><i
+                                                class="fa  fa-edit"></i></button>
+                                    </td>
+
+                                </tr>
+                                {% include "bot/emoji_modal.html" with channel=channel %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block local_js %}
+    <script src="{% static "plugins/inputemoji/inputemoji.js" %}"></script>
+    <script>
+
+        let getCookie = c_name => {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start !== -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end === -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start, c_end));
+                }
+            }
+            return "";
+        };
+        $('.button-emoji').emoji(
+            {
+                listCSS: {
+                    'z-index': 100
+                }
+            }
+        );
+
+        $('body').on('click', '.emoji-form-submit', function () {
+            let $this = $(this);
+            let $modal = $this.parents('.modal').first();
+            let $form = $modal.find('form').first();
+
+
+            $.ajax({
+                url: $form.attr('data-url'),
+                method: 'post',
+                data: $form.serialize(),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                success: (res) => {
+                    toastr.success(res.message);
+                    window.location.reload();
+                },
+                error: (error) => {
+                    console.log(error);
+                }
+            })
+
+        })
+
+        $('#emoji-edit-btn').on('click', function (e) {
+            e.preventDefault();
+            let targetModalSelector = $(this).attr('data-target');
+            let $targetModal = $(targetModalSelector);
+
+            $('body').prepend($targetModal);
+            $(targetModalSelector).modal('show');
+
+        })
+
+
+    </script>
+{% endblock %}

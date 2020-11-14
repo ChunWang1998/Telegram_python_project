@@ -1,0 +1,38 @@
+{% load bot_tags %}
+{# a template for each comment (for "new" comments only) #}
+<div data-comment-id="{{ comment.id }}" id="comment-{{ comment.id }}" data-url="{% url "pre-comment-form" comment.id %}"
+     class="comment">
+    {# a comment's user profile img #}
+    <div class="comment-actions--reply comment-img">
+        {% if comment.user.photo %}
+            <img height="40" width="40" src="{{ comment.user.photo.url }}" alt="profile picture"
+                 class="rounded-circle"/>
+        {% else %}
+            {% comment "originally written by Joseph, however the position is different in Chrome x Firefox and looks weird" %}
+                <svg height="40" width="40">
+                    <circle cx="18" cy="20" r="18" fill="#369ace"></circle>
+                    &lt;!&ndash; https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/y#text &ndash;&gt;
+                    <text id="initials" x="45%" y="50%" font-size="1.1rem" dy=".38rem"
+                          text-anchor="middle"
+                          fill="{% get_user_color comment.user post.post_channel %}">{{ comment.user.photo_initials }}
+                    </text>
+                </svg>
+            {% endcomment %}
+            <button class="button btn-usr-profile" style="height:40px;width:40px;font-size=1.1rem;background-color:#369ace;color:{% get_user_color comment.user post.post_channel %};">{{ comment.user.photo_initials }}</button>
+        {% endif %}
+    </div>
+    {# comment's text content #}
+    <div class="comment-info">
+        <div class="comment-info__group">
+                                        <span style="color: {% get_user_color comment.user post.post_channel %}"
+                                              class="comment-info__group--name">
+                                            {{ comment.user.full_name }}
+                                        </span>
+            <span class="comment-info__group--date text-muted">{{ comment.time }}
+                {% if comment.is_edited %}, edited{% endif %}</span>
+        </div>
+        <div class="comment-text">{{ comment.text|linebreaksbr }}</div>
+        {# the aval. actions for a comment #}
+        {% include "bot/comment_actions.html" %}
+    </div>
+</div>

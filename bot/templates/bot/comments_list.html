@@ -1,0 +1,8 @@
+{#把comments 一個一個列出用的... 整個list#}
+{% for comment in comments %}
+    {% if not comment.parent %}
+        {% include "bot/comment.html" %}
+    {% else %}
+        {% include "bot/comment_reply.html" %}
+    {% endif %}
+{% endfor %}

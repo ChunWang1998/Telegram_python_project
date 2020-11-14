@@ -1,0 +1,103 @@
+{# DashBoard > 貼文資料 #}
+
+{% extends "bot/home.html" %}
+{% load static %}
+
+{% block content %}
+    <div data-url="{% url "post-list" %}" id="posts-container" class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">貼文列表</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="text-primary">
+                            <tr>
+                                <th>
+                                    <form method="get" action="">
+                                        <div class="form-group">
+                                            <label for="channel-select">頻道</label>
+                                            <select name="channel-id" id="channel-select" class="form-control">
+                                                <option value="" disabled selected>選擇一個頻道</option>
+                                                {% for channel in channels %}
+                                                    <option value="{{ channel.id }}">{{ channel.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </form>
+                                </th>
+                                <th>
+                                    <form method="get" action="">
+                                        <div class="form-group">
+                                            <label for="post-id-filter">Id</label>
+                                            <input name="post-id" id="post-id-filter" class="form-control" type="text">
+                                        </div>
+                                    </form>
+                                </th>
+                                <th>
+                                    按鈕1
+                                </th>
+                                <th>
+                                    按鈕2
+                                </th>
+                                <th>
+                                    按鈕3
+                                </th>
+                                <th>
+                                    留言
+                                </th>
+
+                                <th>
+                                    集客力
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for post_data in posts_data %}
+                                <tr>
+                                    {% for entry in post_data %}
+                                        <td>
+                                            {{ entry }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {# 在 DashBoard 做分頁用的功能 #}
+                        <ul class="pagination">
+                            {% if has_previous %}
+                                <li data-page-number="{{ previous_page }}" class="page-item"><a class="page-link"
+                                                                                                href="#">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for page in pages %}
+                                {% if page == page_number %}
+                                    <li data-page-number="{{ page }}" class="page-item active"><a class="page-link"
+                                                                                                  href="#">{{ page }}</a>
+                                    </li>
+                                {% else %}
+                                    <li data-page-number="{{ page }}" class="page-item"><a class="page-link"
+                                                                                           href="#">{{ page }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if has_next %}
+                                <li data-page-number="{{ next_page }}" class="page-item"><a class="page-link"
+                                                                                            href="#">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block local_js %}
+    <script src="{% static "bot/posts.js" %}"></script>
+{% endblock %}
